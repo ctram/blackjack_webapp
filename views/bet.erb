@@ -1,0 +1,24 @@
+<div class="jumbotron">
+  <h1>Welcome to Blackjack!</h1>
+</div>
+
+
+Alright, <%= session[:name]%>, let's start.
+<BR><BR>
+You currently have in $<%= session[:user_money] %>.
+<BR><BR>
+How much do you want to bet?
+<BR><br>
+
+<div class="container">
+  <%if session[:over_bet] %>
+    <div class="alert alert-error">You may not bet more than you currently have in your bank. Please try another bet.</div>
+  <% end %>
+</div>
+
+<BR><BR>
+<form action='/calc' method='post'>
+  <input type='text' name='bet'>
+  <input type='submit' class='btn'>
+
+</form>

@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'sinatra'
-
+require 'pry'
 set :sessions, true
 
 =begin
@@ -51,4 +51,33 @@ set :sessions, true
 helpers do
 end
 
-get "/"
+get "/welcome" do
+  session[:user_money] = 500
+  binding.pry
+  erb :welcome
+end
+
+get '/bet' do
+  binding.pry
+  erb :bet
+end
+
+post '/calc' do
+
+  session[:bet] = params[:bet]
+  if session[:bet] > session[:user_money]
+    session[:over_bet] = true
+    redirect '/bet'
+  else
+    redirect '/show_hands'
+  end
+end
+
+get '/show_hands' do
+end
+
+post '/new_game' do
+  session[:over_bet] = false
+  session[:name] = params[:name].capitalize
+  redirect '/bet'
+end
