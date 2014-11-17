@@ -52,9 +52,14 @@ set :sessions, true
 
 =end
 
-# TODO: code stay for user.
+# TODO: dealer hits until he reaches 17
 
 helpers do
+
+  def dealer_hits
+    session[:dealer_hand] << session[:deck].pop
+  end
+
   def bust?(hand)
     if show_hand_total(hand) > 21
       true
@@ -117,7 +122,6 @@ end
 
 # change to get
 get '/new_game' do
-  # TODO: create deck
   suits = %w(diamonds spades hearts clubs)
   values = %w(ace 2 3 4 5 6 7 8 9 10 jack queen king)
   deck = []
@@ -137,17 +141,20 @@ get '/new_game' do
   suit = dealer_hand[1][1]
   session[:hidden_card] = [value,suit]
 
-  binding.pry
-
   if session[:first_game]
     session[:user_bank] = 500
   end
+
   session[:deck] = deck
   session[:user_hand] = user_hand
   session[:user_bust] = false
   session[:dealer_hand] = dealer_hand
+  session[:dealer_bust] = false
+  session[:dealers_turn] = false
   session[:user_stay] = false
+  session[:dealer_stay] = false
   session[:over_bet] = false
+  session[:winner] = nil
 
   redirect '/bet'
 end
@@ -173,11 +180,30 @@ get '/show_hands' do
     session[:dealer_hand][1][0] = "Hidden"
   else
     session[:dealer_hand][1] = session[:hidden_card]
+    session[:dealers_turn] = true
   end
-  binding.pry
-
   erb :show_hands
 end
+
+
+############################################################3
+get '/dealer_plays' do
+  session[:dealers_turn] = true
+
+  if show_hand_total(session[:dealer_hand]) < 17
+    dealer_hits()
+  end
+
+  if show_hand_total(session[:dealer_hand]) >= 17 and show_hand_total(session[:dealer_hand]) < 21
+    session[:dealer_stay] = true
+  end
+
+  session[:dealer_bust] = true if show_hand_total(session[:dealer_hand]) > 21
+  binding.pry
+  erb :show_hands
+
+end
+
 
 get '/user_hit' do
   session[:user_hand] << session[:deck].pop
@@ -192,13 +218,18 @@ end
 
 get '/payouts' do
   bet = session[:bet]
+
   if session[:user_bust]
     session[:user_bank] -= bet
-  else
+  elsif session[:dealer_bust]
     session[:user_bank] += bet
+  else
+    if session[:winner] == :user
+      session[:user_bank] += bet
+    elsif session[:winner] == :dealer
+      session[:user_bank] -= bet
+    end
   end
-  # possible for user to have negative money
-  # give user more money in /new_game
 
   redirect '/new_game'
 end
