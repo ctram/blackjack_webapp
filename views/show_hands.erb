@@ -15,7 +15,7 @@ Dealer's hand:<BR>
   <%= show_card_image(card) %>
 <% end %>
 <BR>
-Total:
+Total: <%= show_hand_total(session[:dealer_hand]) %>
 
 <BR><bR>
 
@@ -24,4 +24,9 @@ Total:
   <%= show_card_image(card) %>
 <% end %>
 <BR>
-Total:
+Total: <%= show_hand_total(session[:user_hand]) %>
+
+<form action='/user_hit' method='get'>
+  <input type="submit" value="Hit" class="btn btn-lg btn-primary">
+
+</form>

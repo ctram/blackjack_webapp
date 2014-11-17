@@ -52,7 +52,6 @@ set :sessions, true
 
 =end
 
-# TODO: display total of hand in show_hand.erb
 # TODO: code hit and stay methods
 
 
@@ -73,6 +72,31 @@ helpers do
     end
   end
 
+  def show_hand_total(hand)
+    sum = 0
+    face_cards = %w(jack queen king)
+    num_aces = 0
+    hand.each do |card|
+      if card[0] == "Hidden"
+        nil
+      elsif face_cards.include? card[0]
+        sum += 10
+      elsif card[0] == "ace"
+        sum += 11
+        num_aces += 1
+      else
+        sum += card[0].to_i
+      end
+    end
+
+    while sum > 21 and num_aces > 0
+      sum = sum - 11 + 1
+      num_aces -= 1
+    end
+
+    sum
+  end
+
 end
 
 get "/welcome" do
@@ -91,7 +115,7 @@ post '/new_game' do
     end
   end
   deck.shuffle!
-  binding.pry
+
   user_hand = []
   user_hand << deck.pop << deck.pop
   dealer_hand = []
@@ -103,19 +127,19 @@ post '/new_game' do
   session[:user_stay] = false
   session[:over_bet] = false
   session[:name] = params[:name].capitalize
-  binding.pry
+
   redirect '/bet'
 end
 
 get '/bet' do
-  #binding.pry
+
   erb :bet
 end
 
 post '/calc' do
-  #binding.pry
+
   session[:bet] = params[:bet].to_i
-  #binding.pry
+
   if session[:bet] > session[:user_bank]
     session[:over_bet] = true
     redirect '/bet'
@@ -125,22 +149,21 @@ post '/calc' do
 end
 
 get '/show_hands' do
-  # XXX:
-  # TODO: code show_hands
-    # TODO: if player has not stayed, then dealer hides one card
 
   if !session[:user_stay]
     @dealer_hand = session[:dealer_hand]
     @dealer_hand[1] = ["Hidden"]
 
     @user_hand = session[:user_hand]
-    binding.pry
+
     erb :show_hands
   else
     @dealer_hand = session[:dealer_hand]
     @user_stay = session[:user_hand]
   end
 
-  # show dealer's hands
-  # show totals
+end
+
+get '/user_hit' do
+  "test"
 end
