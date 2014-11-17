@@ -1,0 +1,27 @@
+<!-- <div class="jumbotron">
+  <h1>Blackjack</h1>
+</div>
+<BR><BR>
+ -->
+
+<div class="well well-lg">
+  <h1>
+    Blackjack
+  </h1>
+</div>
+
+Dealer's hand:<BR>
+<% session[:dealer_hand].each do |card| %>
+  <%= show_card_image(card) %>
+<% end %>
+<BR>
+Total:
+
+<BR><bR>
+
+<%= session[:name]%>'s hand:<br>
+<% session[:user_hand].each do |card| %>
+  <%= show_card_image(card) %>
+<% end %>
+<BR>
+Total:

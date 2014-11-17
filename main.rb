@@ -5,11 +5,11 @@ set :sessions, true
 
 =begin
   Logic:
-    Welcome page
-      ask user for name
-      start bank at $500; bank persists from game to game
-    bet page
-      user bets part of his bank
+    x Welcome page
+      x ask user for name
+      x start bank at $500; bank persists from game to game
+    x bet page
+      x user bets part of his bank
     user page:
       first deal:
         show initial cards for dealer and user
@@ -26,6 +26,7 @@ set :sessions, true
       display who won or push
       ask whether player wants to play again
       move bank --> bet page
+
 
   session hash should include:
     - player's name
@@ -45,27 +46,93 @@ set :sessions, true
         - bust
         - win
 
+
+  Progression:
+    welcome -> new_game -> bet -> calc ->show_hands
+
 =end
 
 
 helpers do
+  # TODO: def to draw/hit cards
+  def hit(player_hand, deck)
+
+
+  end
+
+  # TODO: add images to show_hands()
+  def show_hands(hand)
+    binding.pry
+    hand.each do |card|
+      if card[0] == "Hidden"
+        "<img src='/images/cards/cover.jpg'>    "
+      else
+        suit = card[1]
+        value = card[0]
+        "<img src='/images/cards/#{suit}_#{value}.jpg'>    "
+      end
+    end
+  end
+
+  def show_card_image(card)
+    suit = card[1]
+    value = card[0]
+
+    if card[0] == "Hidden"
+      "<img src='/images/cards/cover.jpg'>    "
+    else
+      "<img src='/images/cards/#{suit}_#{value}.jpg'>    "
+    end
+  end
+
 end
 
+
+
+
+
 get "/welcome" do
-  session[:user_money] = 500
-  binding.pry
+  session[:user_bank] = 500
   erb :welcome
 end
 
-get '/bet' do
+post '/new_game' do
+  # TODO: create deck
+  suits = %w(diamonds spades hearts clubs)
+  values = %w(ace 2 3 4 5 6 7 8 9 10 jack queen king)
+  deck = []
+  suits.each do |suit|
+    values.each do |value|
+      deck << [value,suit]
+    end
+  end
+  deck.shuffle!
   binding.pry
+  user_hand = []
+  user_hand << deck.pop << deck.pop
+  dealer_hand = []
+  dealer_hand << deck.pop << deck.pop
+
+  session[:deck] = deck
+  session[:user_hand] = user_hand
+  session[:dealer_hand] = dealer_hand
+  session[:user_stay] = false
+  session[:over_bet] = false
+  session[:name] = params[:name].capitalize
+  binding.pry
+  redirect '/bet'
+end
+
+get '/bet' do
+  #binding.pry
   erb :bet
 end
 
 post '/calc' do
-
-  session[:bet] = params[:bet]
-  if session[:bet] > session[:user_money]
+  #binding.pry
+  session[:bet] = params[:bet].to_i
+  #binding.pry
+  if session[:bet] > session[:user_bank]
     session[:over_bet] = true
     redirect '/bet'
   else
@@ -74,10 +141,22 @@ post '/calc' do
 end
 
 get '/show_hands' do
-end
+  # XXX:
+  # TODO: code show_hands
+      # TODO: if player has not stayed, then dealer hides one card
 
-post '/new_game' do
-  session[:over_bet] = false
-  session[:name] = params[:name].capitalize
-  redirect '/bet'
+      if !session[:user_stay]
+        @dealer_hand = session[:dealer_hand]
+        @dealer_hand[1] = ["Hidden"]
+
+        @user_hand = session[:user_hand]
+        binding.pry
+        erb :show_hands
+      else
+        @dealer_hand = session[:dealer_hand]
+        @user_stay = session[:user_hand]
+      end
+
+      # show dealer's hands
+      # show totals
 end
