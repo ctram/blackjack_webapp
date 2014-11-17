@@ -10,8 +10,22 @@
   </h1>
 </div>
 
+<!-- If User Busts -->
+<div class="container">
+  <%if session[:user_bust] %>
+    <div class="alert alert-error">You've bust. Would you like to play again?
+      <% session[:first_game] = false %>
+      <form action='/payouts' method='get'>
+        <button type="submit" class="btn btn-default">Play again!</button>
+      </form>
+    </div>
+  <% end %>
+</div>
+
+
 Dealer's hand:<BR>
 <% session[:dealer_hand].each do |card| %>
+  <% binding.pry %>
   <%= show_card_image(card) %>
 <% end %>
 <BR>
@@ -26,7 +40,12 @@ Total: <%= show_hand_total(session[:dealer_hand]) %>
 <BR>
 Total: <%= show_hand_total(session[:user_hand]) %>
 
+<!-- Hit -->
 <form action='/user_hit' method='get'>
   <input type="submit" value="Hit" class="btn btn-lg btn-primary">
+</form>
 
+<!-- Stay -->
+<form action='/user_stay' method='get'>
+  <input type="submit" value="Stay" class="btn btn-lg btn-success">
 </form>

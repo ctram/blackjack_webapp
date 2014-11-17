@@ -52,13 +52,15 @@ set :sessions, true
 
 =end
 
-# TODO: code hit and stay methods
-
+# TODO: code stay for user.
 
 helpers do
-  # TODO: def to draw/hit cards
-  def hit(player_hand, deck)
-
+  def bust?(hand)
+    if show_hand_total(hand) > 21
+      true
+    else
+      false
+    end
   end
 
   def show_card_image(card)
@@ -101,10 +103,20 @@ end
 
 get "/welcome" do
   session[:user_bank] = 500
+  session[:first_game] = true
   erb :welcome
 end
 
-post '/new_game' do
+post '/store_name' do
+  if session[:first_game]
+    session[:name] = params[:name].capitalize
+  end
+  redirect '/new_game'
+end
+
+
+# change to get
+get '/new_game' do
   # TODO: create deck
   suits = %w(diamonds spades hearts clubs)
   values = %w(ace 2 3 4 5 6 7 8 9 10 jack queen king)
@@ -121,12 +133,21 @@ post '/new_game' do
   dealer_hand = []
   dealer_hand << deck.pop << deck.pop
 
+  value = dealer_hand[1][0]
+  suit = dealer_hand[1][1]
+  session[:hidden_card] = [value,suit]
+
+  binding.pry
+
+  if session[:first_game]
+    session[:user_bank] = 500
+  end
   session[:deck] = deck
   session[:user_hand] = user_hand
+  session[:user_bust] = false
   session[:dealer_hand] = dealer_hand
   session[:user_stay] = false
   session[:over_bet] = false
-  session[:name] = params[:name].capitalize
 
   redirect '/bet'
 end
@@ -137,7 +158,6 @@ get '/bet' do
 end
 
 post '/calc' do
-
   session[:bet] = params[:bet].to_i
 
   if session[:bet] > session[:user_bank]
@@ -149,21 +169,40 @@ post '/calc' do
 end
 
 get '/show_hands' do
-
   if !session[:user_stay]
-    @dealer_hand = session[:dealer_hand]
-    @dealer_hand[1] = ["Hidden"]
-
-    @user_hand = session[:user_hand]
-
-    erb :show_hands
+    session[:dealer_hand][1][0] = "Hidden"
   else
-    @dealer_hand = session[:dealer_hand]
-    @user_stay = session[:user_hand]
+    session[:dealer_hand][1] = session[:hidden_card]
   end
+  binding.pry
 
+  erb :show_hands
 end
 
 get '/user_hit' do
-  "test"
+  session[:user_hand] << session[:deck].pop
+  bust?(session[:user_hand]) == true ? session[:user_bust] = true : nil
+  redirect '/show_hands'
 end
+
+get '/user_stay' do
+  session[:user_stay] = true
+  redirect '/show_hands'
+end
+
+get '/payouts' do
+  bet = session[:bet]
+  if session[:user_bust]
+    session[:user_bank] -= bet
+  else
+    session[:user_bank] += bet
+  end
+  # possible for user to have negative money
+  # give user more money in /new_game
+
+  redirect '/new_game'
+end
+
+
+
+# TODO: code /user_stay

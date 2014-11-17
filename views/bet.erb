@@ -2,19 +2,28 @@
   <h1>Welcome to Blackjack!</h1>
 </div>
 
-
-Alright, <%= session[:name]%>, let's start.
-<BR><BR>
-You currently have in $<%= session[:user_bank] %>.
-<BR><BR>
-How much do you want to bet?
-<BR><br>
+<div class="container">
+  <%if session[:user_bank] == 0 %>
+    <div class="alert alert-error">You're out of money. I'll take pity and give you some more. Try to win your money back.</div>
+    <% session[:user_bank] = 10 %>
+  <% end %>
+</div>
 
 <div class="container">
   <%if session[:over_bet] %>
     <div class="alert alert-error">You may not bet more than you currently have in your bank. Please try another bet.</div>
   <% end %>
 </div>
+
+
+Alright, <%= session[:name]%>, let's start.
+<BR><BR>
+You currently have $<%= session[:user_bank] %>.
+<BR><BR>
+How much do you want to bet?
+<BR><br>
+
+
 
 <BR><BR>
 <!-- <form action='/calc' method='post'>
