@@ -52,26 +52,14 @@ set :sessions, true
 
 =end
 
+# TODO: display total of hand in show_hand.erb
+
 
 helpers do
   # TODO: def to draw/hit cards
   def hit(player_hand, deck)
 
 
-  end
-
-  # TODO: add images to show_hands()
-  def show_hands(hand)
-    binding.pry
-    hand.each do |card|
-      if card[0] == "Hidden"
-        "<img src='/images/cards/cover.jpg'>    "
-      else
-        suit = card[1]
-        value = card[0]
-        "<img src='/images/cards/#{suit}_#{value}.jpg'>    "
-      end
-    end
   end
 
   def show_card_image(card)
@@ -86,10 +74,6 @@ helpers do
   end
 
 end
-
-
-
-
 
 get "/welcome" do
   session[:user_bank] = 500
