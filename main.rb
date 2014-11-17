@@ -53,12 +53,12 @@ set :sessions, true
 =end
 
 # TODO: display total of hand in show_hand.erb
+# TODO: code hit and stay methods
 
 
 helpers do
   # TODO: def to draw/hit cards
   def hit(player_hand, deck)
-
 
   end
 
@@ -127,20 +127,20 @@ end
 get '/show_hands' do
   # XXX:
   # TODO: code show_hands
-      # TODO: if player has not stayed, then dealer hides one card
+    # TODO: if player has not stayed, then dealer hides one card
 
-      if !session[:user_stay]
-        @dealer_hand = session[:dealer_hand]
-        @dealer_hand[1] = ["Hidden"]
+  if !session[:user_stay]
+    @dealer_hand = session[:dealer_hand]
+    @dealer_hand[1] = ["Hidden"]
 
-        @user_hand = session[:user_hand]
-        binding.pry
-        erb :show_hands
-      else
-        @dealer_hand = session[:dealer_hand]
-        @user_stay = session[:user_hand]
-      end
+    @user_hand = session[:user_hand]
+    binding.pry
+    erb :show_hands
+  else
+    @dealer_hand = session[:dealer_hand]
+    @user_stay = session[:user_hand]
+  end
 
-      # show dealer's hands
-      # show totals
+  # show dealer's hands
+  # show totals
 end
