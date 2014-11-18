@@ -34,10 +34,31 @@
   <% end %>
 </div>
 
+<!-- Alert - Winning alert -->
+<div class="container">
+  <% if session[:winner] %>
+    <% if session[:winner] == :push %>
+      <% winning_text = "Push, no one wins" %>
+    <% else %>
+      <% session[:winner] == :user ? winner = session[:user_name] : winner = "Dealer" %>
+      <% winning_text = "#{winner} wins!" %>
+      <%  %>
+    <% end %>
+    <div class="alert alert-error">
+      <%= winning_text %>
+      <% session[:first_game] = false %>
+      <BR>
+      <form action='/payouts' method='get'>
+        <button type="submit" class="btn btn-default">Play again!</button>
+      </form>
+    </div>
+  <% end %>
+</div>
+
 <!-- Display Dealer's hand -->
 Dealer's hand:<BR>
 <% session[:dealer_hand].each do |card| %>
-  <% binding.pry %>
+  <%  %>
   <%= show_card_image(card) %>
 <% end %>
 <BR>
@@ -47,7 +68,7 @@ Total: <%= show_hand_total(session[:dealer_hand]) %>
 
 <!-- Button to show dealer's next turn -->
 <div class="container">
-  <%if session[:dealers_turn] and !session[:dealer_bust] %>
+  <%if session[:dealers_turn] and !session[:dealer_bust] and !session[:winner] %>
     <div class="alert alert-success">
       <form action='/dealer_plays' method='get'>
         <button type="submit" class="btn btn-default">Show Dealer's next turn</button>

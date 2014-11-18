@@ -52,12 +52,26 @@ set :sessions, true
 
 =end
 
-# TODO: dealer hits until he reaches 17
 
 helpers do
 
   def dealer_hits
     session[:dealer_hand] << session[:deck].pop
+  end
+
+  def find_winner
+    user_sum = show_hand_total(session[:user_hand])
+    dealer_sum = show_hand_total(session[:dealer_hand])
+
+    if user_sum > dealer_sum
+      winner = :user
+    elsif user_sum < dealer_sum
+      winner = :dealer
+    else
+      winner = :push
+    end
+
+    session[:winner] = winner
   end
 
   def bust?(hand)
@@ -187,19 +201,22 @@ end
 
 
 ############################################################3
+# TODO: dealer hits until he reaches 17
 get '/dealer_plays' do
   session[:dealers_turn] = true
 
+  # If dealer's hand is less than 17, hit
   if show_hand_total(session[:dealer_hand]) < 17
     dealer_hits()
   end
 
-  if show_hand_total(session[:dealer_hand]) >= 17 and show_hand_total(session[:dealer_hand]) < 21
+  # Dealer stays above 16
+  if show_hand_total(session[:dealer_hand]) >= 17
     session[:dealer_stay] = true
+    session[:dealer_bust] = true if show_hand_total(session[:dealer_hand]) > 21 # Toggle dealer_bust
+    find_winner()
   end
 
-  session[:dealer_bust] = true if show_hand_total(session[:dealer_hand]) > 21
-  binding.pry
   erb :show_hands
 
 end
@@ -233,7 +250,3 @@ get '/payouts' do
 
   redirect '/new_game'
 end
-
-
-
-# TODO: code /user_stay
