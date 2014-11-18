@@ -1,8 +1,5 @@
-<!-- <div class="jumbotron">
-  <h1>Blackjack</h1>
-</div>
-<BR><BR>
- -->
+<!DOCTYPE html>
+<html lang="en">
 
 <div class="well well-lg">
   <h1>
@@ -11,38 +8,32 @@
 </div>
 
 <!-- If User Busts -->
-<div class="container">
-  <%if session[:user_bust] %>
+<% if session[:user_bust] or session[:dealer_bust] %>
+  <div class='container'>
+  <% if session[:user_bust] %>
     <div class="alert alert-error">You've bust. Would you like to play again?
       <% session[:first_game] = false %>
-      <form action='/payouts' method='get'>
-        <button type="submit" class="btn btn-default">Play again!</button>
-      </form>
-    </div>
-  <% end %>
-</div>
-
-<!-- If Dealer Busts -->
-<div class="container">
-  <%if session[:dealer_bust] %>
+  <!-- If Dealer Busts -->
+  <% elsif session[:dealer_bust] %>
     <div class="alert alert-error">Dealer busts, you win!
       <% session[:first_game] = false %>
+  <% end %>
+  <% session[:bet_zero] = false %>
       <form action='/payouts' method='get'>
         <button type="submit" class="btn btn-default">Play again!</button>
       </form>
     </div>
-  <% end %>
-</div>
+  </div>
+<% end %>
 
 <!-- Alert - Winning alert -->
 <div class="container">
-  <% if session[:winner] %>
+  <% if session[:winner] and !session[:dealer_bust] %>
     <% if session[:winner] == :push %>
       <% winning_text = "Push, no one wins" %>
     <% else %>
-      <% session[:winner] == :user ? winner = session[:user_name] : winner = "Dealer" %>
+      <% session[:winner] == :user ? winner = session[:name] : winner = "Dealer" %>
       <% winning_text = "#{winner} wins!" %>
-      <%  %>
     <% end %>
     <div class="alert alert-error">
       <%= winning_text %>
@@ -56,15 +47,15 @@
 </div>
 
 <!-- Display Dealer's hand -->
-Dealer's hand:<BR>
-<% session[:dealer_hand].each do |card| %>
-  <%  %>
-  <%= show_card_image(card) %>
-<% end %>
-<BR>
-Total: <%= show_hand_total(session[:dealer_hand]) %>
-
-<BR><bR>
+<div class='well'>
+  Dealer's hand:<BR>
+    <% session[:dealer_hand].each do |card| %>
+    <%  %>
+    <%= show_card_image(card) %>
+  <% end %>
+  <BR>
+  Total: <%= show_hand_total(session[:dealer_hand]) %>
+</div>
 
 <!-- Button to show dealer's next turn -->
 <div class="container">
@@ -77,22 +68,27 @@ Total: <%= show_hand_total(session[:dealer_hand]) %>
   <% end %>
 </div>
 
-<BR><br>
-
 <!-- Display User's hand -->
-<%= session[:name]%>'s hand:<br>
-<% session[:user_hand].each do |card| %>
-  <%= show_card_image(card) %>
+<div class='well'>
+  <%= session[:name]%>'s hand:<br>
+  <% session[:user_hand].each do |card| %>
+    <%= show_card_image(card) %>
+  <% end %>
+  <BR>
+  Total: <%= show_hand_total(session[:user_hand]) %>
+</div>
+
+<!-- Hit or Stay -->
+<% if !session[:winner] and !session[:user_bust] %>
+  <div class="well">
+    <!-- Hit -->
+    <form action='/user_hit' method='get'>
+      <input type="submit" value="Hit" class="btn btn-lg btn-primary">
+    </form>
+
+    <!-- Stay -->
+    <form action='/user_stay' method='get'>
+      <input type="submit" value="Stay" class="btn btn-lg btn-success">
+    </form>
+  </div>
 <% end %>
-<BR>
-Total: <%= show_hand_total(session[:user_hand]) %>
-
-<!-- Hit -->
-<form action='/user_hit' method='get'>
-  <input type="submit" value="Hit" class="btn btn-lg btn-primary">
-</form>
-
-<!-- Stay -->
-<form action='/user_stay' method='get'>
-  <input type="submit" value="Stay" class="btn btn-lg btn-success">
-</form>

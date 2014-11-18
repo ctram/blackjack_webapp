@@ -1,13 +1,26 @@
-<div class="jumbotron">
-  <h1>Welcome to Blackjack!</h1>
+<div class="jumbotron well">
+  <h1>Blackjack</h1>
 </div>
+
+<% session[:no_name] = false %>
 
 <div class="container">
   <%if session[:user_bank] == 0 %>
-    <div class="alert alert-error">You're out of money. I'll take pity and give you some more. Try to win your money back.</div>
+    <div class="alert alert-error">
+      You're out of money. I'll take pity and give you some more. Try to win your money back.
+    </div>
     <% session[:user_bank] = 10 %>
   <% end %>
 </div>
+
+<!-- Alert - must enter bet -->
+<% if session[:bet_zero] %>
+  <div class="container">
+      <div class="alert alert-error">
+        You must enter something to bet in order to play.
+      </div>
+  </div>
+<% end %>
 
 <div class="container">
   <%if session[:over_bet] %>
@@ -15,28 +28,14 @@
   <% end %>
 </div>
 
-
-Alright, <%= session[:name]%>, let's start.
-<BR><BR>
-You currently have $<%= session[:user_bank] %>.
-<BR><BR>
-How much do you want to bet?
-<BR><br>
-
-
-
-<BR><BR>
-<!-- <form action='/calc' method='post'>
-  <input type='text' name='bet'>
-  <input type='submit' class='btn'>
-
-</form>
- -->
-
-
-<form action='/calc' method='post' class="navbar-form navbar-left">
-  <div class="form-group">
-    <input type="text" class="form-control" placeholder="Enter your bet." name='bet'/>
-  </div>
-  <button type="submit" class="btn btn-default">Submit</button>
-</form>
+<div class='well'>
+  Alright, <%= session[:name]%>, let's start. You have $<%= session[:user_bank] %>.
+  How much do you want to bet?
+  <BR><BR>
+  <form action='/calc' method='post' class="navbar-form navbar-left">
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Enter your bet." name='bet'/>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </div>
+  </form>
+</div>

@@ -1,31 +1,29 @@
 
-<div class="jumbotron">
+<div class="jumbotron well">
   <h1>Welcome to Blackjack!</h1>
 </div>
 
-<% name = "allen" %>
+<!-- Alert - Must enter name -->
+<% if session[:no_name] %>
+  <div class="container">
+      <div class="alert alert-error">
+        You must enter a name in order to start the game.
+      </div>
+  </div>
 
-<% if name == "john" %>
-  Hello <%= name %> !
-<% else %>
-  I don't know you.
 <% end %>
 
-<!--
-<div class="alert alert-success" role="alert">
-        <strong>Well done!</strong> You successfully read this important alert message.
-      </div> -->
-
 <BR><BR>
-Please enter your name to start the game!:
-<BR><BR>
-<form action='/store_name' method='post' class="navbar-form navbar-left">
-  <div class="form-group">
-    <input type="text" class="form-control" placeholder="Enter your name." name='name'/>
-  </div>
-  <button type="submit" class="btn btn-default">Submit</button>
-</form>
-
+<div class='well'>
+  Please enter your name to start the game!
+  <BR><BR>
+  <form action='/store_name' method='post' class="navbar-form navbar-left">
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Enter your name!" name='name'/>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </div>
+  </form>
+</div>
 
 
 
