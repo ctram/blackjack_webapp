@@ -141,7 +141,7 @@ post '/calc' do
   if session[:bet] > session[:user_bank]
     session[:over_bet] = true
     redirect '/bet'
-  elsif session[:bet] == 0
+  elsif session[:bet] <= 0
     session[:bet_zero] = true
     redirect '/bet'
   else
