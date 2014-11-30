@@ -173,7 +173,7 @@ get '/dealer_plays' do
     session[:dealer_bust] = true if show_hand_total(session[:dealer_hand]) > 21 # Toggle dealer_bust
     find_winner()
   end
-  erb :show_hands
+  redirect '/show_hands'
 
 end
 
