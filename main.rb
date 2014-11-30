@@ -69,7 +69,7 @@ helpers do
   end
 end
 
-get "/welcome" do
+get "/" do
   session[:bet_zero] = false
   session[:user_bank] = 500
   session[:first_game] = true
@@ -90,7 +90,7 @@ post '/store_name' do
 end
 
 get '/invalid_name' do
-  redirect '/welcome'
+  redirect '/'
 end
 
 get '/new_game' do
